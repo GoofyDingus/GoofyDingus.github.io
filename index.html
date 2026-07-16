@@ -927,10 +927,25 @@
                 box-shadow: 0 -4px 15px rgba(218, 192, 183, 0.2);
             }
         }
+/* Tic-Tac-Toe Menu Styling */
+.ttt-menu-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(77, 85, 93, 0.4); z-index: 9999; align-items: center; justify-content: center; }
+.ttt-card { background: #f0f7fc; border: 3px solid #b3c5ff; padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 10px 25px rgba(179, 197, 255, 0.3); }
+.board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin: 20px 0; }
+.cell { width: 80px; height: 80px; background: #eaf3ff; border: 2px solid #b3c5ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; cursor: pointer; color: #4b6cb7; }
+.cell:hover { background: #d1e3ff; }
+.button-dock { position: fixed; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 10px; z-index: 1000; }
+.winner-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(240, 247, 252, 0.9); z-index: 10000;
+    align-items: center; justify-content: center;
+    font-size: 4rem; color: #4b6cb7; font-weight: bold;
+    animation: fadeOut 1s forwards; animation-delay: 3s;
+}
+@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
     </style>
 </head>
 <body>
-
+<div id="winner-banner" class="winner-overlay"></div>
     <!-- Background Music Element -->
     <div class="music-player">
         <!-- Spotify Drawer Container -->
@@ -1091,11 +1106,30 @@
         </div>
     </div>
 
-    <!-- Cozy Floating Envelope Button (Bottom-Left Corner) -->
-    <button class="floating-envelope-btn" onclick="openContactModal()">
+    <div class="button-dock">
+    <!-- Envelope Button -->
+    <button class="floating-envelope-btn" onclick="openContactModal()" style="position: static; box-shadow: none;">
         <span class="floating-envelope-emoji">✉️</span>
         <span class="floating-envelope-text">Contact Me!</span>
     </button>
+    
+    <!-- Dice Button -->
+    <button class="dice-btn" onclick="toggleTTT(true)" style="font-size: 1.5rem; background: var(--accent-warm-orange); border: 1.5px dashed #e6d5c3; padding: 8px 12px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(218, 192, 183, 0.4);">🎲</button>
+</div>
+
+<!-- Hidden Menu remains the same -->
+<div id="ttt-menu" class="ttt-menu-modal">
+    <div class="ttt-card">
+        <h2 style="color: #4b6cb7;">Tic-Tac-Toe</h2>
+        <div class="board">
+            <script>
+                for(let i=0; i<9; i++) document.write(`<div class="cell" onclick="makeMove(${i})" id="c${i}"></div>`);
+            </script>
+        </div>
+        <button class="music-btn" onclick="resetBoard()" style="background: #b3c5ff; color: #3b4b80;">Reset</button>
+        <button class="music-btn" onclick="toggleTTT(false)" style="background: #b3c5ff; color: #3b4b80;">Close</button>
+    </div>
+</div>
 
     <!-- Cozy Contact Form Modal -->
     <div class="contact-modal" id="contactModal" onclick="closeContactModal(event)">
@@ -1477,6 +1511,45 @@
         } else {
             statusTextLabel.textContent = "No User ID Configured";
         }
+function toggleTTT(show) {
+    document.getElementById('ttt-menu').style.display = show ? 'flex' : 'none';
+}
+
+let board = Array(9).fill(null);
+let currentPlayer = 'X';
+
+function makeMove(index) {
+    if (!board[index] && !checkWinner()) { // Prevent moves after win
+        board[index] = currentPlayer;
+        document.getElementById(`c${index}`).textContent = currentPlayer;
+        
+        if (checkWinner()) {
+            const banner = document.getElementById('winner-banner');
+            banner.textContent = currentPlayer + " WINS!";
+            banner.style.display = 'flex';
+            banner.style.opacity = '1';
+            // Reset visibility for animation
+            banner.style.animation = 'none';
+            void banner.offsetWidth; // Trigger reflow
+            banner.style.animation = 'fadeOut 1s forwards 3s';
+        } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+    }
+}
+
+function checkWinner() {
+    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    return wins.some(p => board[p[0]] && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]);
+}
+function resetBoard() {
+    board = Array(9).fill(null);
+    for(let i=0; i<9; i++) {
+        const cell = document.getElementById(`c${i}`);
+        if(cell) cell.textContent = '';
+    }
+    currentPlayer = 'X';
+}
     </script>
 <!-- ... rest of your body content ... -->
 <!-- Image: Removed 'transition' so it appears instantly -->
@@ -1574,4 +1647,63 @@
             }
         });
     </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkLi-Vw77eVp718st8ycnAoB8NR7pPKKs",
+    authDomain: "tic-tac-toe-8b338.firebaseapp.com",
+    databaseURL: "https://tic-tac-toe-8b338-default-rtdb.firebaseio.com",
+    projectId: "tic-tac-toe-8b338",
+    storageBucket: "tic-tac-toe-8b338.firebasestorage.app",
+    messagingSenderId: "494581928887",
+    appId: "1:494581928887:web:f9104ec30befbf99478e32"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const boardRef = ref(db, 'game/board');
+
+  // Listen for board updates from Firebase
+  onValue(boardRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+          board = data;
+          data.forEach((val, i) => {
+              const cell = document.getElementById(`c${i}`);
+              if(cell) cell.textContent = val;
+          });
+      }
+  });
+
+  // Game state variables
+  let board = Array(9).fill(null);
+  let currentPlayer = 'X';
+
+  // Make a move and sync to Firebase
+  window.makeMove = function(index) {
+      if (!board[index]) {
+          board[index] = currentPlayer;
+          set(boardRef, board); // Updates Firebase, which triggers the onValue listener
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      }
+  };
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js"; // 1. Add Auth import
+
+// ... your existing imports ...
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app); // 2. Initialize Auth
+const db = getDatabase(app);
+
+// 3. Sign in immediately so the user has an 'auth' identity
+signInAnonymously(auth)
+  .then(() => {
+    console.log("Signed in anonymously!");
+  })
+  .catch((error) => {
+    console.error("Auth error:", error);
+  });
+</script>
 </body>
