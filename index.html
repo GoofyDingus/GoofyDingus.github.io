@@ -1,4 +1,688 @@
-GoofyDingus
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goofy Dingus</title>
+    <style>
+        :root {
+            --bg-color: #fcf6f0;
+            --card-bg: #ffffff;
+            --accent-color: #ffb3ba; /* Pastel Pink */
+            --accent-warm-orange: #ffdfba; /* Pastel Orange */
+            --accent-warm-yellow: #ffffba; /* Pastel Yellow */
+            --accent-warm-green: #baffc9; /* Pastel Green */
+            --accent-warm-purple: #bae1ff; /* Pastel Blue/Purple */
+            --accent-warm-lavender: #e8dbfc; /* Pastel Lavender */
+            --text-color: #5d4d4a; /* Warm Soft Brown */
+            --text-muted: #8a7a75;
+            --discord-color: #b3c5ff; /* Pastel Discord Blue */
+            --youtube-color: #ffb3b3; /* Pastel Red */
+        }
 
+        /* Custom Scrollbar Styling for the browser window */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-warm-orange);
+            border-radius: 10px;
+            border: 2px solid var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
 
-    Welcome to GoofyDingus!
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 130px 20px 20px 20px;
+            position: relative;
+        }
+
+        /* Responsive Music Player Card */
+        .music-player {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: var(--card-bg);
+            border: 2px solid #f3e5d8;
+            padding: 12px 18px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(218, 192, 183, 0.4);
+            z-index: 1000;
+            width: 320px;
+        }
+
+        .player-info {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-align: center;
+            white-space: normal; 
+            word-wrap: break-word;
+            overflow: visible;
+            text-overflow: clip;
+            line-height: 1.3;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .music-btn {
+            background: var(--accent-warm-orange);
+            border: none;
+            color: #b56c3c;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: transform 0.1s;
+        }
+
+        .music-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Control Sliders & Time Markers */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .time-display {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 2px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 4px;
+            border-top: 1px dashed #f3e5d8;
+            padding-top: 6px;
+        }
+
+        .volume-label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            min-width: 20px;
+        }
+
+        /* Shared Custom Pastel Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #f3e5d8;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        #progress-slider {
+            width: 100%;
+        }
+
+        #volume-slider {
+            flex-grow: 1;
+        }
+
+        /* Combined Profile Card Layout */
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(218, 192, 183, 0.3);
+            border: 2px solid #f3e5d8;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2px;
+            color: #4a3b32;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #e0858d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        /* Upgraded Section Styling with Scroll Fade Transitions */
+        .section {
+            text-align: left;
+            background: #fff9f5;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 5px solid var(--accent-color);
+            border-top: 1px solid #fff0e6;
+            border-right: 1px solid #fff0e6;
+            border-bottom: 1px solid #fff0e6;
+            
+            /* Intersection Observer Fade Configuration */
+            opacity: 0.3;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, transform;
+        }
+
+        /* Active highlight styling when the section is on screen */
+        .section.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #4a3b32;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+
+        p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Items Grid Style (Used for Games, Shows, & Artists) */
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .item-tag {
+            background-color: #fffdfa;
+            border: 1px solid #f3e5d8;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6e5d59;
+        }
+
+        /* Responsive Gallery Grid & Dynamic Border Image Handling */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        /* Updated configuration to apply border directly to images */
+        .gallery-item {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            overflow: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: auto;
+            aspect-ratio: auto; /* Removes the forced square aspect ratio */
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            max-height: 200px; /* Limits tall images from stretching too much */
+            object-fit: contain;
+            border: 1.5px dashed #e6d5c3; /* Border now wraps the image exactly */
+            border-radius: 12px;
+            background-color: #fdfaf7; /* Keeps the clean background style behind the image */
+        }
+
+        .initials-list {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .initial-badge {
+            background: var(--accent-warm-orange);
+            color: #b56c3c;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 1px solid rgba(213, 147, 98, 0.2);
+        }
+
+        .social-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #4a3b32;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-discord {
+            background-color: var(--discord-color);
+            color: #3b4b80;
+        }
+
+        .btn-youtube {
+            background-color: var(--youtube-color);
+            color: #853d3d;
+        }
+
+        .footer-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .social-links {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+            body {
+                padding-top: 190px;
+            }
+            .music-player {
+                position: absolute;
+                top: 15px;
+                right: 50%;
+                transform: translateX(50%);
+                width: calc(100% - 40px);
+                max-width: 340px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Music Element -->
+    <div class="music-player">
+        <div class="player-info">
+            <span id="now-playing">🎵 Shuffle Playlist</span>
+        </div>
+        <div class="player-controls">
+            <button class="music-btn" onclick="prevSong()">&lt;</button>
+            <button class="music-btn" id="play-btn" onclick="toggleMusic()">Play</button>
+            <button class="music-btn" onclick="nextSong()">&gt;</button>
+        </div>
+        <div class="slider-container">
+            <div class="slider-row">
+                <input type="range" id="progress-slider" value="0" min="0" max="100">
+            </div>
+            <div class="time-display">
+                <span id="time-current">0:00</span>
+                <span id="time-duration">0:00</span>
+            </div>
+        </div>
+        <div class="volume-container">
+            <span class="volume-label">🔊</span>
+            <input type="range" id="volume-slider" value="80" min="0" max="100">
+        </div>
+    </div>
+    <audio id="bg-music"></audio>
+
+    <div class="container">
+        <div>
+            <h1>Goofy Dingus</h1>
+            <div class="subtitle">- Welcome to my space! -</div>
+        </div>
+
+        <!-- External Links -->
+        <div class="social-links font-style-normal">
+            <a href="https://discord.gg/Bd88yk8bMW" target="_blank" class="btn btn-discord">
+                &gt; Join My Discord &lt;
+            </a>
+            <a href="https://www.youtube.com/@Goofy_Dingus" target="_blank" class="btn btn-youtube">
+                &gt; My YouTube Channel &lt;
+            </a>
+        </div>
+
+        <!-- About Me Section -->
+        <div class="section">
+            <div class="section-title">✨ About Me</div>
+            <p>Hey there! I'm male, living in the USA. I'm gay, a proud furry, and a beginner working on my skills with Moon Animator. :3</p>
+        </div>
+
+        <!-- Favorite Games Section -->
+        <div class="section" style="border-left-color: var(--accent-warm-green);">
+            <div class="section-title">2🎮 Favorite Games</div>
+            <p>I spend a lot of time gaming! I absolutely love these titles, among many others:</p>
+            <div class="items-list">
+                <span class="item-tag">🧱 Roblox</span>
+                <span class="item-tag">⛏️ Minecraft</span>
+                <span class="item-tag">🧠 MINDWAVE</span>
+                <span class="item-tag">🔥 A Dance of Fire and Ice</span>
+                <span class="item-tag">✨ ...and so much more!</span>
+            </div>
+        </div>
+
+        <!-- Favorite Shows & Movies Section -->
+        <div class="section" style="border-left-color: var(--accent-warm-purple);">
+            <div class="section-title">🎬 Shows & Movies</div>
+            <p>When I'm not animating or gaming, here's what I'm binge-watching:</p>
+            <div class="items-list">
+                <span class="item-tag">🕷️ Spider-Verse Movies</span>
+                <span class="item-tag">💎 Steven Universe</span>
+                <span class="item-tag">🐺 Beastars</span>
+                <span class="item-tag">🧪 Dr. Stone</span>
+                <span class="item-tag">🎪 The Amazing Digital Circus</span>
+                <span class="item-tag">🌌 Game-o-verse</span>
+                <span class="item-tag">⚔️ Knights of Guinevere</span>
+                <span class="item-tag">🎬 ...and the list goes on!</span>
+            </div>
+        </div>
+
+        <!-- Favorite Artists Section -->
+        <div class="section" style="border-left-color: var(--accent-warm-lavender);">
+            <div class="section-title">🎧 Favorite Artists</div>
+            <p>Some of my absolute favorite music artists that I listen to on repeat:</p>
+            <div class="items-list">
+                <span class="item-tag">🎹 Frizk</span>
+                <span class="item-tag">👾 AZALI</span>
+                <span class="item-tag">🎸 Sydney Gish</span>
+            </div>
+        </div>
+
+        <!-- Friends Initials Section -->
+        <div class="section" style="text-align: center; border-left-color: var(--accent-warm-orange);">
+            <div class="section-title" style="justify-content: center;">❤️ My Closest Friends</div>
+            <p>Shoutout to my absolute favorite people! I love these guys:</p>
+            <div class="initials-list">
+                <span class="initial-badge">M</span>
+                <span class="initial-badge">N</span>
+                <span class="initial-badge">Z</span>
+                <span class="initial-badge">R</span>
+                <span class="initial-badge">S</span>
+                <span class="initial-badge">D</span>
+                <span class="initial-badge">B</span>
+            </div>
+        </div>
+
+        <!-- Image Gallery Section -->
+        <div class="section" style="border-left-color: var(--accent-warm-yellow);">
+            <div class="section-title">🖼️ Gallery</div>
+            <p>Fanart! O:3</p>
+            <div class="gallery-grid">
+                <!-- Image 1 -->
+                <div class="gallery-item">
+                    <img src="pic1.png" alt="Gallery Image 1">
+                </div>
+                <!-- Image 2 -->
+                <div class="gallery-item">
+                    <img src="pic2.png" alt="Gallery Image 2">
+                </div>
+                <!-- Image 3 -->
+                <div class="gallery-item">
+                    <img src="pic3.png" alt="Gallery Image 3">
+                </div>
+            </div>
+        </div>
+
+        <!-- Last Updated Stamp -->
+        <div class="footer-date">
+            Last Updated on: July 15, 2026
+        </div>
+    </div>
+
+    <!-- JavaScript For Music & Scroll Effects -->
+    <script>
+        const playlist = [
+            { file: "song1.mp3", title: "Imposter Syndrome - Sydney Gish" },
+            { file: "song2.mp3", title: "meow synth speed garage was a mistake (ft. cat) - AZALI" },
+            { file: "song3.mp3", title: "Not asking 4 much - Frizk" }
+        ];
+        
+        let shuffledQueue = [];
+        let currentSongIndex = 0;
+        
+        const music = document.getElementById("bg-music");
+        const btn = document.getElementById("play-btn");
+        const statusText = document.getElementById("now-playing");
+        const progressSlider = document.getElementById("progress-slider");
+        const volumeSlider = document.getElementById("volume-slider");
+        const timeCurrent = document.getElementById("time-current");
+        const timeDuration = document.getElementById("time-duration");
+
+        // Set initial volume
+        music.volume = volumeSlider.value / 100;
+
+        function shuffleArray(array) {
+            let temp = [...array];
+            for (let i = temp.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [temp[i], temp[j]] = [temp[j], temp[i]];
+            }
+            return temp;
+        }
+
+        function initPlaylist() {
+            shuffledQueue = shuffleArray(playlist);
+            currentSongIndex = 0;
+            loadSong(shuffledQueue[currentSongIndex]);
+        }
+
+        function loadSong(songObject) {
+            music.src = songObject.file;
+            statusText.innerText = "🎵 " + songObject.title;
+            progressSlider.value = 0;
+            timeCurrent.innerText = "0:00";
+            timeDuration.innerText = "0:00";
+        }
+
+        function toggleMusic() {
+            if (shuffledQueue.length === 0) {
+                initPlaylist();
+            }
+
+            if (music.paused) {
+                playCurrent();
+            } else {
+                music.pause();
+                btn.innerText = "Play";
+                btn.style.backgroundColor = "var(--accent-warm-orange)";
+                btn.style.color = "#b56c3c";
+            }
+        }
+
+        function playCurrent() {
+            music.play().then(() => {
+                btn.innerText = "Pause";
+                btn.style.backgroundColor = "var(--accent-color)";
+                btn.style.color = "#853d3d";
+            }).catch(err => {
+                console.log("Playback blocked or file path incorrect!");
+            });
+        }
+
+        function prevSong() {
+            if (shuffledQueue.length === 0) {
+                initPlaylist();
+            }
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = shuffledQueue.length - 1;
+            }
+            loadSong(shuffledQueue[currentSongIndex]);
+            playCurrent();
+        }
+
+        function nextSong() {
+            if (shuffledQueue.length === 0) {
+                initPlaylist();
+            }
+            currentSongIndex++;
+            if (currentSongIndex >= shuffledQueue.length) {
+                currentSongIndex = 0;
+            }
+            loadSong(shuffledQueue[currentSongIndex]);
+            playCurrent();
+        }
+
+        // Format time in mm:ss format
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ":" + (secs < 10 ? "0" : "") + secs;
+        }
+
+        // Keep progress slider and time markers updated
+        music.addEventListener("timeupdate", function() {
+            if (music.duration) {
+                progressSlider.value = (music.currentTime / music.duration) * 100;
+                timeCurrent.innerText = formatTime(music.currentTime);
+            }
+        });
+
+        // Set duration marker once audio metadata loads
+        music.addEventListener("loadedmetadata", function() {
+            timeDuration.innerText = formatTime(music.duration);
+        });
+
+        // Seek song location manually with the slider
+        progressSlider.addEventListener("input", function() {
+            if (music.duration) {
+                music.currentTime = (progressSlider.value / 100) * music.duration;
+                timeCurrent.innerText = formatTime(music.currentTime);
+            }
+        });
+
+        // Control volume with the volume slider
+        volumeSlider.addEventListener("input", function() {
+            music.volume = volumeSlider.value / 100;
+        });
+
+        // Automatically load and play next song in queue when ended
+        music.addEventListener("ended", function() {
+            nextSong();
+        });
+
+        // Intersection Observer logic to dynamically fade tabs in and out as they scroll
+        const sections = document.querySelectorAll('.section');
+        
+        const observerOptions = {
+            root: null, // screen / viewport
+            rootMargin: '-10% 0px -15% 0px', // triggers fade slightly before leaving viewport margins
+            threshold: 0.15 // percentage of item that must be visible to unfade
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                } else {
+                    entry.target.classList.remove('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            scrollObserver.observe(section);
+        });
+    </script>
+
+</body>
+</html>
