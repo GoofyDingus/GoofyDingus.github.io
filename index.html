@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goofy's Space</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <link class="favicon" rel="icon" type="image/png" href="icon.png">
     <!-- Discord Embed Customization -->
     <meta property="og:title" content="Goofy's Space" />
     <meta property="og:description" content="Welcome to Goofy's space! Check out some things about me! :3" />
@@ -25,6 +25,12 @@
             --text-muted: #8a7a75;
             --discord-color: #b3c5ff; /* Pastel Discord Blue */
             --youtube-color: #ffb3b3; /* Pastel Red */
+            
+            /* Status Colors */
+            --status-online: #baffc9;
+            --status-idle: #ffdfba;
+            --status-dnd: #ffb3b3;
+            --status-offline: #8a7a75;
         }
 
         /* Custom Scrollbar Styling for the browser window */
@@ -76,6 +82,181 @@
             box-shadow: 0 4px 15px rgba(218, 192, 183, 0.4);
             z-index: 1000;
             width: 320px;
+        }
+
+        /* Spotify Drawer & Slide-out Container */
+        .spotify-drawer-container {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            z-index: 999;
+            pointer-events: none; /* Let clicks pass through when hidden */
+        }
+
+        /* The sliding pink handle tab */
+        .spotify-link-btn {
+            background: var(--accent-color);
+            color: #853d3d;
+            border: 2px solid #f3e5d8;
+            border-right: none;
+            width: 26px;
+            height: 50px;
+            border-radius: 10px 0 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: -4px 4px 10px rgba(218, 192, 183, 0.15);
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .spotify-link-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            left: -26px; /* Offset to attach directly to the left border */
+        }
+
+        /* Gentle Jumping Notification Badge */
+        .spotify-alert-badge {
+            position: absolute;
+            top: -18px;
+            left: -20px;
+            background-color: #ff6b6b; /* Soft warm red */
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1001;
+        }
+
+        /* Show the alert only when Spotify is active AND the drawer is collapsed */
+        .spotify-drawer-container.spotify-active:not(.active) .spotify-alert-badge {
+            opacity: 1;
+        }
+
+        /* Jumping Animation Triggered by Javascript Interval every 5 seconds */
+        .spotify-alert-badge.bounce {
+            animation: gentle-jump 1.2s ease-in-out;
+        }
+
+        @keyframes gentle-jump {
+            0%, 100% { transform: translateY(0); }
+            20% { transform: translateY(-8px); }
+            40% { transform: translateY(0); }
+            60% { transform: translateY(-4px); }
+            80% { transform: translateY(0); }
+        }
+
+        /* Sliding Panel Box */
+        .spotify-slide-panel {
+            background: var(--card-bg);
+            border: 2px solid #f3e5d8;
+            border-radius: 20px 0 0 20px;
+            padding: 15px;
+            width: 240px;
+            box-shadow: -8px 4px 20px rgba(218, 192, 183, 0.35);
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: scaleX(0.9);
+            transform-origin: right center;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+
+        /* Trigger expand animation ONLY when active class is applied (NO HOVER TRIGGER) */
+        .spotify-drawer-container.active .spotify-slide-panel {
+            opacity: 1;
+            left: -264px; /* Pulls panel out cleanly next to the tab */
+            transform: scaleX(1);
+            pointer-events: auto;
+        }
+
+        .spotify-drawer-container.active .spotify-link-btn {
+            left: -290px; /* Moves arrow tab to the far end of the expanded panel */
+            border-radius: 10px 0 0 10px;
+            background: var(--accent-warm-orange);
+            color: #b56c3c;
+            transform: translateY(-50%);
+        }
+
+        /* Inside Slide Panel Elements */
+        .spotify-album-art {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1.5px dashed #e6d5c3;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .spotify-panel-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .spotify-panel-song {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+        }
+
+        .spotify-panel-artist {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .spotify-join-btn {
+            background: #1db954; /* Clean Spotify Green */
+            color: white;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.25);
+        }
+
+        .spotify-join-btn:hover {
+            transform: scale(1.05);
+            background: #1ed760;
         }
 
         .player-info {
@@ -198,6 +379,62 @@
             flex-grow: 1;
         }
 
+        /* Discord Badges Container - Flexbox layout to align side-by-side */
+        .discord-status-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        /* Discord Status Indicator Badge Styling */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #fffdfa;
+            border: 1px solid #f3e5d8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        /* Dynamic Activity / Custom Status Badge */
+        .activity-badge {
+            display: none; /* Controlled dynamically by Lanyard WS */
+            align-items: center;
+            gap: 8px;
+            background-color: #fffdfa;
+            border: 1px solid #f3e5d8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .activity-badge.active {
+            display: inline-flex; /* Shows when status or game is active */
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--status-offline);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
         /* Combined Profile Card Layout */
         .container {
             background: var(--card-bg);
@@ -225,7 +462,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 10px;
+            margin-bottom: 2px;
         }
 
         /* Upgraded Section Styling with Scroll Fade Transitions */
@@ -276,6 +513,7 @@
             margin-top: 10px;
         }
 
+        /* Cozy Interactive Tooltips Styling */
         .item-tag {
             background-color: #fffdfa;
             border: 1px solid #f3e5d8;
@@ -284,6 +522,245 @@
             font-size: 0.95rem;
             font-weight: 600;
             color: #6e5d59;
+            position: relative;
+            cursor: help;
+            user-select: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .item-tag:hover {
+            background-color: #fffaf5;
+            transform: translateY(-2px);
+        }
+
+        /* Tooltip Bubble Structure */
+        .item-tag::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #5d4d4a; /* Warm brown styling matching text color */
+            color: #fff9f5;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.4;
+            width: 180px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 4px 12px rgba(93, 77, 74, 0.25);
+            z-index: 100;
+            transition: opacity 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                        transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                        visibility 0.25s;
+        }
+
+        /* Tooltip Arrow */
+        .item-tag::before {
+            content: "";
+            position: absolute;
+            bottom: 112%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #5d4d4a transparent transparent transparent;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+            transition: opacity 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                        transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                        visibility 0.25s;
+        }
+
+        /* Trigger tooltip visibility on hover */
+        .item-tag:hover::after,
+        .item-tag:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Floating Envelope Button - Fixed in Bottom Left Corner */
+        .floating-envelope-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--accent-warm-orange);
+            color: #b56c3c;
+            border: 1.5px dashed #e6d5c3;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 0px;
+            box-shadow: 0 4px 10px rgba(218, 192, 183, 0.4);
+            transition: background 0.3s, border-color 0.3s, transform 0.2s;
+            overflow: hidden;
+            max-width: 48px; /* Just enough to fit the emoji initially */
+            white-space: nowrap;
+        }
+
+        .floating-envelope-btn:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            max-width: 160px; /* Slides out to reveal "Contact Me!" text */
+            gap: 8px;
+        }
+
+        .floating-envelope-emoji {
+            font-size: 1.2rem;
+            display: inline-block;
+        }
+
+        .floating-envelope-text {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #853d3d;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .floating-envelope-btn:hover .floating-envelope-text {
+            opacity: 1;
+        }
+
+        /* Cozy Modal Form Container styling */
+        .contact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(93, 77, 74, 0.5); /* Cozy dim backdrop */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .contact-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .contact-card {
+            background: var(--card-bg);
+            border: 2px solid #f3e5d8;
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(93, 77, 74, 0.2);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+
+        .contact-modal.open .contact-card {
+            transform: scale(1);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            color: #853d3d;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: #4a3b32;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .modal-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Pastel Form Elements */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #fdfcfb;
+            border: 1.5px solid #f3e5d8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(255, 179, 186, 0.3);
+        }
+
+        textarea.form-control {
+            resize: none;
+            height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent-warm-orange);
+            color: #b56c3c;
+            border: 1.5px dashed #e6d5c3;
+            border-radius: 50px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-color);
+            color: #853d3d;
+            border-color: var(--accent-color);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
         }
 
         /* Responsive Gallery Grid & Dynamic Border Image Handling */
@@ -382,6 +859,38 @@
             margin-top: 10px;
         }
 
+        /* Cozy "Back to Top" Button Styles */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-warm-orange);
+            color: #b56c3c;
+            border: 1.5px dashed #e6d5c3;
+            padding: 10px 15px;
+            border-radius: 50px; /* Adjusted to keep it a cozy pill-shape */
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(218, 192, 183, 0.4);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            background: var(--accent-color);
+            color: #853d3d;
+        }
+
         @media (max-width: 500px) {
             .social-links {
                 grid-template-columns: 1fr;
@@ -400,6 +909,23 @@
                 width: calc(100% - 40px);
                 max-width: 340px;
             }
+            .spotify-drawer-container {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            .spotify-link-btn {
+                display: none; /* Hide arrow on narrow mobile viewports to prevent layout overlap */
+            }
+            .spotify-slide-panel {
+                position: relative;
+                width: 100%;
+                border-radius: 20px 20px 0 0;
+                top: -150px;
+                box-shadow: 0 -4px 15px rgba(218, 192, 183, 0.2);
+            }
         }
     </style>
 </head>
@@ -407,13 +933,32 @@
 
     <!-- Background Music Element -->
     <div class="music-player">
+        <!-- Spotify Drawer Container -->
+        <div id="spotify-drawer" class="spotify-drawer-container">
+            <!-- Sliding tab handle -->
+            <div id="spotify-arrow" class="spotify-link-btn">&lt;</div>
+            <!-- Jump up and down alert badge! -->
+            <div id="spotify-alert" class="spotify-alert-badge">!</div>
+            <!-- Slide-out information display -->
+            <div class="spotify-slide-panel">
+                <img id="spotify-art" class="spotify-album-art" src="" alt="Album Art">
+                <div class="spotify-panel-details">
+                    <div id="spotify-song" class="spotify-panel-song">Loading Track...</div>
+                    <div id="spotify-artist" class="spotify-panel-artist">Artist</div>
+                </div>
+                <a id="spotify-join-link" class="spotify-join-btn" target="_blank" href="#">
+                    <span>🎧 Join Session</span>
+                </a>
+            </div>
+        </div>
+        
         <div class="player-info">
             <span id="now-playing">🎵 Shuffle Playlist</span>
         </div>
         <div class="player-controls">
-            <button class="music-btn" onclick="prevSong()">&lt;</button>
+            <button class="music-btn" id="prev-btn" onclick="prevSong()">&lt;</button>
             <button class="music-btn" id="play-btn" onclick="toggleMusic()">Play</button>
-            <button class="music-btn" onclick="nextSong()">&gt;</button>
+            <button class="music-btn" id="next-btn" onclick="nextSong()">&gt;</button>
         </div>
         <div class="slider-container">
             <div class="slider-row">
@@ -435,6 +980,18 @@
         <div>
             <h1>Goofy Dingus</h1>
             <div class="subtitle">- Welcome to my space! -</div>
+            <!-- Discord Badges Container -->
+            <div class="discord-status-container">
+                <!-- Discord Status Badge -->
+                <div class="status-badge">
+                    <div class="status-dot" id="discord-status-dot"></div>
+                    <span id="discord-status-text">Loading...</span>
+                </div>
+                <!-- Dynamic Activity / Custom Status Badge -->
+                <div class="activity-badge" id="discord-activity-badge">
+                    <span id="discord-activity-text">Loading Status...</span>
+                </div>
+            </div>
         </div>
 
         <!-- External Links -->
@@ -450,19 +1007,19 @@
         <!-- About Me Section -->
         <div class="section">
             <div class="section-title">✨ About Me</div>
-            <p>Hey there! I'm male, living in the USA. I'm gay, a proud furry, and a beginner working on my skills with Moon Animator. :3</p>
+            <p>Hey there! I'm male, living in the USA. I'm gay, a proud furry, and a beginner working on my skills with <span class="item-tag" style="padding: 2px 6px; font-size: 0.9rem;" data-tooltip="A super peak Roblox animation plugin I use! ($30 USD.)">Moon Animator</span>. :3</p>
         </div>
 
         <!-- Favorite Games Section -->
         <div class="section" style="border-left-color: var(--accent-warm-green);">
-            <div class="section-title">2🎮 Favorite Games</div>
+            <div class="section-title">🎮 Favorite Games</div>
             <p>I spend a lot of time gaming! I absolutely love these titles, among many others:</p>
             <div class="items-list">
-                <span class="item-tag">🧱 Roblox</span>
-                <span class="item-tag">⛏️ Minecraft</span>
-                <span class="item-tag">🧠 MINDWAVE</span>
-                <span class="item-tag">🔥 A Dance of Fire and Ice</span>
-                <span class="item-tag">✨ ...and so much more!</span>
+                <span class="item-tag" data-tooltip="There are so many fun games here, like TSB! 🧱">🧱 Roblox</span>
+                <span class="item-tag" data-tooltip="Classic. I love modding it and playing with friends! ⛏️">⛏️ Minecraft</span>
+                <span class="item-tag" data-tooltip="Warioware but peak! (Still in Demo) 🧠">🧠 MINDWAVE</span>
+                <span class="item-tag" data-tooltip="Super satisfying rhythm game! 🔥">🔥 A Dance of Fire and Ice</span>
+                <span class="item-tag" data-tooltip="Too many other cool things to list here! :D">✨ ...and so much more!</span>
             </div>
         </div>
 
@@ -471,14 +1028,14 @@
             <div class="section-title">🎬 Shows & Movies</div>
             <p>When I'm not animating or gaming, here's what I'm binge-watching:</p>
             <div class="items-list">
-                <span class="item-tag">🕷️ Spider-Verse Movies</span>
-                <span class="item-tag">💎 Steven Universe</span>
-                <span class="item-tag">🐺 Beastars</span>
-                <span class="item-tag">🧪 Dr. Stone</span>
-                <span class="item-tag">🎪 The Amazing Digital Circus</span>
-                <span class="item-tag">🌌 Game-o-verse</span>
-                <span class="item-tag">⚔️ Knights of Guinevere</span>
-                <span class="item-tag">🎬 ...and the list goes on!</span>
+                <span class="item-tag" data-tooltip="The animation, music, and art are a masterpiece. 🕷️">🕷️ Spider-Verse Movies</span>
+                <span class="item-tag" data-tooltip="Heartwarming story with awesome music and amazing animation! 💎">💎 Steven Universe</span>
+                <span class="item-tag" data-tooltip="Romantic, deep world-building with awesome characters! 🐺">🐺 Beastars</span>
+                <span class="item-tag" data-tooltip="Rebuilding civilization with science! So entertaining. 🧪">Dr. Stone</span>
+                <span class="item-tag" data-tooltip="Wacky, dark, and beautifully 3D animated indie series! 🎪">🎪 The Amazing Digital Circus</span>
+                <span class="item-tag" data-tooltip="An epic community-driven animated crossover saga! 🌌">🌌 Game-o-verse</span>
+                <span class="item-tag" data-tooltip="Disney but it's lore accurate. ⚔️">⚔️ Knights of Guinevere</span>
+                <span class="item-tag" data-tooltip="I love finding new animated series on YT and Netflix!">🎬 ...and the list goes on!</span>
             </div>
         </div>
 
@@ -487,9 +1044,9 @@
             <div class="section-title">🎧 Favorite Artists</div>
             <p>Some of my absolute favorite music artists that I listen to on repeat:</p>
             <div class="items-list">
-                <span class="item-tag">🎹 Frizk</span>
-                <span class="item-tag">👾 AZALI</span>
-                <span class="item-tag">🎸 Sydney Gish</span>
+                <span class="item-tag" data-tooltip="Amazing music. 'Not asking 4 much' is so peak! 🎹">🎹 Frizk</span>
+                <span class="item-tag" data-tooltip="His classic and game music is so cool. 👾">👾 AZALI</span>
+                <span class="item-tag" data-tooltip="Super unique indie artist! I love her storytelling music. 🎸">🎸 Sydney Gish</span>
             </div>
         </div>
 
@@ -530,12 +1087,53 @@
 
         <!-- Last Updated Stamp -->
         <div class="footer-date">
-            Last Updated on: July 15, 2026
+            Last Updated on: July 16, 2026
         </div>
     </div>
 
-    <!-- JavaScript For Music & Scroll Effects -->
+    <!-- Cozy Floating Envelope Button (Bottom-Left Corner) -->
+    <button class="floating-envelope-btn" onclick="openContactModal()">
+        <span class="floating-envelope-emoji">✉️</span>
+        <span class="floating-envelope-text">Contact Me!</span>
+    </button>
+
+    <!-- Cozy Contact Form Modal -->
+    <div class="contact-modal" id="contactModal" onclick="closeContactModal(event)">
+        <div class="contact-card" onclick="event.stopPropagation()">
+            <button class="close-modal-btn" onclick="toggleContactModal(false)">✕</button>
+            <div class="modal-title">✉️ Drop a Message!</div>
+            <div class="modal-subtitle">Leave your info and a note, and it'll fly straight to my Discord! ✨</div>
+            
+            <form action="https://formspree.io/f/mzdndjpl" method="POST" id="contactForm">
+                <!-- "Want me to Respond?" Toggle Checkbox -->
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+                    <input type="checkbox" id="respond-checkbox" name="respond" value="Yes" style="width: auto; cursor: pointer; height: 16px; width: 16px; accent-color: var(--accent-color);">
+                    <label for="respond-checkbox" style="margin-bottom: 0; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: var(--text-color);">Want me to Respond?</label>
+                </div>
+
+                <div class="form-group" id="discord-input-group">
+                    <label id="discord-label" for="discord">YOUR DISCORD USERNAME</label>
+                    <input type="text" id="discord" name="discord" class="form-control" placeholder="username#0000 or username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">YOUR MESSAGE</label>
+                    <textarea id="message" name="message" class="form-control" placeholder="Write your message here..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send to Discord ✨</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cozy Back to Top Button -->
+    <button class="back-to-top" id="backToTopBtn" onclick="scrollToTop()">▲ Top</button>
+
+    <!-- JavaScript For Music, Scroll Effects & Lanyard Discord Status -->
     <script>
+        // Your configured Discord User ID
+        const DISCORD_ID = "1195870381081374843";
+
+        // --- Local Music Queue Setup ---
         const playlist = [
             { file: "song1.mp3", title: "Imposter Syndrome - Sydney Gish" },
             { file: "song2.mp3", title: "meow synth speed garage was a mistake (ft. cat) - AZALI" },
@@ -546,150 +1144,434 @@
         let currentSongIndex = 0;
         
         const music = document.getElementById("bg-music");
-        const btn = document.getElementById("play-btn");
+        const playBtn = document.getElementById("play-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
         const statusText = document.getElementById("now-playing");
         const progressSlider = document.getElementById("progress-slider");
         const volumeSlider = document.getElementById("volume-slider");
         const timeCurrent = document.getElementById("time-current");
         const timeDuration = document.getElementById("time-duration");
+        
+        // Spotify Slide-out Elements
+        const spotifyArrow = document.getElementById("spotify-arrow");
+        const spotifyDrawer = document.getElementById("spotify-drawer");
+        const spotifyArt = document.getElementById("spotify-art");
+        const spotifySong = document.getElementById("spotify-song");
+        const spotifyArtist = document.getElementById("spotify-artist");
+        const spotifyJoinLink = document.getElementById("spotify-join-link");
+        const spotifyAlert = document.getElementById("spotify-alert");
+
+        // Activity Badge Elements
+        const activityBadge = document.getElementById("discord-activity-badge");
+        const activityText = document.getElementById("discord-activity-text");
 
         // Set initial volume
         music.volume = volumeSlider.value / 100;
 
-        function shuffleArray(array) {
-            let temp = [...array];
-            for (let i = temp.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [temp[i], temp[j]] = [temp[j], temp[i]];
-            }
-            return temp;
-        }
-
+        // Shuffle queue generator
         function initPlaylist() {
-            shuffledQueue = shuffleArray(playlist);
+            shuffledQueue = [...playlist].sort(() => Math.random() - 0.5);
             currentSongIndex = 0;
             loadSong(shuffledQueue[currentSongIndex]);
         }
 
-        function loadSong(songObject) {
-            music.src = songObject.file;
-            statusText.innerText = "🎵 " + songObject.title;
+        // Load song details
+        function loadSong(song) {
+            music.src = song.file;
+            statusText.textContent = "🎵 " + song.title;
             progressSlider.value = 0;
-            timeCurrent.innerText = "0:00";
-            timeDuration.innerText = "0:00";
+            timeCurrent.textContent = "0:00";
+            timeDuration.textContent = "0:00";
         }
 
         function toggleMusic() {
-            if (shuffledQueue.length === 0) {
-                initPlaylist();
-            }
-
             if (music.paused) {
-                playCurrent();
+                music.play().then(() => {
+                    playBtn.textContent = "Pause";
+                }).catch(e => console.log("Playback started with interaction restriction."));
             } else {
                 music.pause();
-                btn.innerText = "Play";
-                btn.style.backgroundColor = "var(--accent-warm-orange)";
-                btn.style.color = "#b56c3c";
+                playBtn.textContent = "Play";
             }
-        }
-
-        function playCurrent() {
-            music.play().then(() => {
-                btn.innerText = "Pause";
-                btn.style.backgroundColor = "var(--accent-color)";
-                btn.style.color = "#853d3d";
-            }).catch(err => {
-                console.log("Playback blocked or file path incorrect!");
-            });
-        }
-
-        function prevSong() {
-            if (shuffledQueue.length === 0) {
-                initPlaylist();
-            }
-            currentSongIndex--;
-            if (currentSongIndex < 0) {
-                currentSongIndex = shuffledQueue.length - 1;
-            }
-            loadSong(shuffledQueue[currentSongIndex]);
-            playCurrent();
         }
 
         function nextSong() {
-            if (shuffledQueue.length === 0) {
-                initPlaylist();
-            }
-            currentSongIndex++;
-            if (currentSongIndex >= shuffledQueue.length) {
-                currentSongIndex = 0;
-            }
+            currentSongIndex = (currentSongIndex + 1) % shuffledQueue.length;
             loadSong(shuffledQueue[currentSongIndex]);
-            playCurrent();
+            music.play().then(() => { playBtn.textContent = "Pause"; });
         }
 
-        // Format time in mm:ss format
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return mins + ":" + (secs < 10 ? "0" : "") + secs;
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + shuffledQueue.length) % shuffledQueue.length;
+            loadSong(shuffledQueue[currentSongIndex]);
+            music.play().then(() => { playBtn.textContent = "Pause"; });
         }
 
-        // Keep progress slider and time markers updated
-        music.addEventListener("timeupdate", function() {
-            if (music.duration) {
-                progressSlider.value = (music.currentTime / music.duration) * 100;
-                timeCurrent.innerText = formatTime(music.currentTime);
-            }
+        // --- Audio Element Listeners ---
+        music.addEventListener("timeupdate", () => {
+            if (!music.duration) return;
+            const progress = (music.currentTime / music.duration) * 100;
+            progressSlider.value = progress;
+            timeCurrent.textContent = formatTime(music.currentTime);
+            timeDuration.textContent = formatTime(music.duration);
         });
 
-        // Set duration marker once audio metadata loads
-        music.addEventListener("loadedmetadata", function() {
-            timeDuration.innerText = formatTime(music.duration);
-        });
-
-        // Seek song location manually with the slider
-        progressSlider.addEventListener("input", function() {
-            if (music.duration) {
-                music.currentTime = (progressSlider.value / 100) * music.duration;
-                timeCurrent.innerText = formatTime(music.currentTime);
-            }
-        });
-
-        // Control volume with the volume slider
-        volumeSlider.addEventListener("input", function() {
-            music.volume = volumeSlider.value / 100;
-        });
-
-        // Automatically load and play next song in queue when ended
-        music.addEventListener("ended", function() {
+        music.addEventListener("ended", () => {
             nextSong();
         });
 
-        // Intersection Observer logic to dynamically fade tabs in and out as they scroll
-        const sections = document.querySelectorAll('.section');
-        
+        // User drags manual progress slider
+        progressSlider.addEventListener("input", () => {
+            if (!music.duration) return;
+            const seekTime = (progressSlider.value / 100) * music.duration;
+            music.currentTime = seekTime;
+        });
+
+        // User adjusts volume slider
+        volumeSlider.addEventListener("input", () => {
+            music.volume = volumeSlider.value / 100;
+        });
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return m + ":" + (s < 10 ? "0" : "") + s;
+        }
+
+        // Initialize local playlist queue
+        initPlaylist();
+
+        // --- Toggle Drawer on Arrow Click ---
+        spotifyArrow.addEventListener("click", (e) => {
+            e.stopPropagation();
+            spotifyDrawer.classList.toggle("active");
+            // Clean active animation off the alert badge instantly upon viewing
+            spotifyAlert.classList.remove("bounce");
+        });
+
+        // Close drawer if clicking outside the player container
+        document.addEventListener("click", (e) => {
+            if (!spotifyDrawer.contains(e.target)) {
+                spotifyDrawer.classList.remove("active");
+            }
+        });
+
+        // --- Calm Jumping 5-Second Interval Notification ---
+        setInterval(() => {
+            // Only play the jumping animation if Spotify is playing AND the drawer is collapsed
+            if (spotifyDrawer.classList.contains("spotify-active") && !spotifyDrawer.classList.contains("active")) {
+                spotifyAlert.classList.add("bounce");
+                
+                // Remove the class when animation ends so it's ready to fire again next loop
+                setTimeout(() => {
+                    spotifyAlert.classList.remove("bounce");
+                }, 1300); // matches the 1.2s bounce animation duration plus a brief rest buffer
+            }
+        }, 5000);
+
+        // --- Intersection Observer for Scroll Fade Transitions ---
         const observerOptions = {
-            root: null, // screen / viewport
-            rootMargin: '-10% 0px -15% 0px', // triggers fade slightly before leaving viewport margins
-            threshold: 0.15 // percentage of item that must be visible to unfade
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.15
         };
 
-        const scrollObserver = new IntersectionObserver((entries) => {
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
+                    entry.target.classList.add("fade-in");
                 } else {
-                    entry.target.classList.remove('fade-in');
+                    entry.target.classList.remove("fade-in");
                 }
             });
         }, observerOptions);
 
-        sections.forEach(section => {
-            scrollObserver.observe(section);
+        document.querySelectorAll(".section").forEach(sec => {
+            observer.observe(sec);
+        });
+
+
+        // --- Back to Top Show/Hide Logic ---
+        const backToTopBtn = document.getElementById("backToTopBtn");
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.classList.add("show");
+            } else {
+                backToTopBtn.classList.remove("show");
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        // --- Cozy Modal Control ---
+        const contactModal = document.getElementById("contactModal");
+        
+        function toggleContactModal(isOpen) {
+            if (isOpen) {
+                contactModal.classList.add("open");
+            } else {
+                contactModal.classList.remove("open");
+            }
+        }
+
+        function openContactModal() {
+            toggleContactModal(true);
+        }
+
+        function closeContactModal(e) {
+            // Close only if backdrop itself is clicked
+            if (e.target === contactModal) {
+                toggleContactModal(false);
+            }
+        }
+
+
+        // --- Dynamic Form Input Logic ---
+        const respondCheckbox = document.getElementById("respond-checkbox");
+        const discordLabel = document.getElementById("discord-label");
+        const discordInput = document.getElementById("discord");
+        const contactForm = document.getElementById("contactForm");
+
+        // Toggle Labels & Instruction Hints
+        respondCheckbox.addEventListener("change", () => {
+            if (respondCheckbox.checked) {
+                discordLabel.innerHTML = 'YOUR DISCORD USER ID <span style="font-size: 0.72rem; font-weight: normal; color: var(--text-muted); text-transform: none;">(Right-click profile -> Copy User ID)</span>';
+                discordInput.placeholder = "e.g., 1195870381081374843";
+            } else {
+                discordLabel.textContent = "YOUR DISCORD USERNAME";
+                discordInput.placeholder = "username#0000 or username";
+            }
+        });
+
+        // Intercept form submission to format the numeric ID
+        contactForm.addEventListener("submit", () => {
+            if (respondCheckbox.checked) {
+                // Remove non-digit characters to isolate just the numeric ID
+                const rawId = discordInput.value.trim().replace(/\D/g, "");
+                if (rawId) {
+                    discordInput.value = `<@${rawId}>`;
+                }
+            }
+        });
+
+
+        // --- Lanyard Real-Time API & WebSocket Core Integration ---
+        const statusDot = document.getElementById("discord-status-dot");
+        const statusTextLabel = document.getElementById("discord-status-text");
+
+        const statusMap = {
+            online: { text: "ONLINE - ✅", color: "var(--status-online)" },
+            idle: { text: "IDLE - AFK! 🌙", color: "var(--status-idle)" },
+            dnd: { text: "DO NOT DISTURB - Busy! 🏢", color: "var(--status-dnd)" },
+            offline: { text: "OFF - Sleeping! 😴", color: "var(--status-offline)" }
+        };
+
+        function updateDiscordPresence(data) {
+            if (!data) return;
+
+            // Update Discord Status Indicator
+            const status = data.discord_status || "offline";
+            const currentStatus = statusMap[status] || statusMap.offline;
+            statusTextLabel.textContent = currentStatus.text;
+            statusDot.style.backgroundColor = currentStatus.color;
+            statusDot.style.boxShadow = `0 0 10px ${currentStatus.color}`;
+
+            // Check if user is actively listening to Spotify
+            if (data.listening_to_spotify && data.spotify) {
+                const track = data.spotify;
+                
+                // Populate slide-out panel layout with current track's info
+                spotifySong.textContent = track.song;
+                spotifyArtist.textContent = track.artist;
+                spotifyArt.src = track.album_art_url || "default-spotify.png";
+                
+                // Show sliding drawer arrows
+                if (track.track_id) {
+                    spotifyJoinLink.href = `https://open.spotify.com/track/${track.track_id}`;
+                    spotifyArrow.classList.add("visible");
+                    // Flag the overall container to enable the alert badge logic
+                    spotifyDrawer.classList.add("spotify-active");
+                } else {
+                    spotifyArrow.classList.remove("visible");
+                    spotifyDrawer.classList.remove("spotify-active");
+                }
+            } else {
+                // Hide the Drawer elements if Spotify stops or goes offline
+                spotifyArrow.classList.remove("visible");
+                spotifyDrawer.classList.remove("active");
+                spotifyDrawer.classList.remove("spotify-active");
+            }
+
+            // Update Dynamic Activity / Custom Status Badge
+            let hasDisplayableStatus = false;
+
+            if (data.activities && data.activities.length > 0) {
+                // Look for an active game (type 0) first
+                const gameActivity = data.activities.find(act => act.type === 0);
+
+                if (gameActivity) {
+                    activityText.textContent = `🕹️ Playing: ${gameActivity.name}`;
+                    activityBadge.classList.add("active");
+                    hasDisplayableStatus = true;
+                } else {
+                    // If not playing a game, look for custom status text (type 4)
+                    const customStatus = data.activities.find(act => act.type === 4);
+                    
+                    if (customStatus && (customStatus.state || customStatus.emoji)) {
+                        let emojiStr = customStatus.emoji ? (customStatus.emoji.name + " ") : "";
+                        let stateStr = customStatus.state || "";
+                        activityText.textContent = `🗨️ Status: ${emojiStr}${stateStr}`;
+                        activityBadge.classList.add("active");
+                        hasDisplayableStatus = true;
+                    }
+                }
+            }
+
+            // Fallback: If absolutely nothing is going on, hide the second badge
+            if (!hasDisplayableStatus) {
+                activityBadge.classList.remove("active");
+            }
+        }
+
+        // Establish real-time persistent websocket connection with Lanyard
+        function connectLanyardWebSocket() {
+            const socket = new WebSocket("wss://api.lanyard.rest/socket");
+
+            socket.addEventListener("message", (event) => {
+                const packet = JSON.parse(event.data);
+
+                if (packet.op === 1) {
+                    // Send heartbeat interval required by Lanyard server
+                    setInterval(() => {
+                        socket.send(JSON.stringify({ op: 3 }));
+                    }, packet.d.heartbeat_interval);
+
+                    // Initialize subscriber stream request on target Discord user ID
+                    socket.send(JSON.stringify({
+                        op: 2,
+                        d: { subscribe_to_id: DISCORD_ID }
+                    }));
+                }
+
+                if (packet.op === 0 && (packet.t === "INIT_STATE" || packet.t === "PRESENCE_UPDATE")) {
+                    updateDiscordPresence(packet.d);
+                }
+            });
+
+            socket.addEventListener("close", () => {
+                // Auto-reconnect if socket drops
+                setTimeout(connectLanyardWebSocket, 5000);
+            });
+        }
+
+        // Initialize Lanyard connection
+        if (DISCORD_ID && DISCORD_ID !== "YOUR_DISCORD_ID_HERE") {
+            connectLanyardWebSocket();
+        } else {
+            statusTextLabel.textContent = "No User ID Configured";
+        }
+    </script>
+<!-- ... rest of your body content ... -->
+<!-- Image: Removed 'transition' so it appears instantly -->
+    <img id="easter-egg-img" src="sebastian_image.png" style="
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100vw; 
+        height: 100vh; 
+        object-fit: contain; 
+        z-index: 20000; 
+        opacity: 0; 
+        pointer-events: none; 
+    ">
+
+    <script>
+        const moveSound = new Audio('effect1.mp3');
+        const clickSound = new Audio('effect2.mp3');
+        const eggSound = new Audio('egg1.mp3');
+        const visualSound = new Audio('effect3.mp3'); 
+        
+        moveSound.volume = 0.3;
+        clickSound.volume = 0.5;
+
+        const eggImg = document.getElementById('easter-egg-img');
+        let typedString = "";
+
+        // Function to create particles
+        const createParticle = (x, y, content, color, isFalling, size) => {
+            const particle = document.createElement("div");
+            particle.textContent = content;
+            particle.style.position = "fixed";
+            const offset = parseInt(size) / 2;
+            particle.style.left = (x - offset) + "px";
+            particle.style.top = (y - offset) + "px";
+            particle.style.pointerEvents = "none";
+            particle.style.color = color;
+            particle.style.fontSize = size;
+            particle.style.transition = isFalling ? "all 0.8s ease-out" : "opacity 0.8s ease-out";
+            particle.style.zIndex = "9999";
+            document.body.appendChild(particle);
+
+            requestAnimationFrame(() => {
+                if (isFalling) {
+                    particle.style.transform = `translate(${Math.random() * 40 - 20}px, 60px)`;
+                }
+                particle.style.opacity = "0";
+            });
+            setTimeout(() => particle.remove(), 800);
+        };
+
+        // Event Listeners
+        document.addEventListener("mousemove", (e) => {
+            if (Math.random() > 0.85) {
+                const char = Math.random() > 0.5 ? "»" : "«";
+                createParticle(e.clientX, e.clientY, char, "#e0858d", true, "12px");
+                moveSound.currentTime = 0;
+                moveSound.play().catch(() => {});
+            }
+        });
+
+        document.addEventListener("click", (e) => {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(() => {});
+            for (let i = 0; i < 3; i++) {
+                createParticle(e.clientX, e.clientY, "⭐", "#ffdfba", false, "24px");
+            }
+        });
+
+	    document.addEventListener("keydown", (event) => {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+            typedString += event.key.toLowerCase();
+            if (typedString.length > 9) typedString = typedString.slice(-9);
+
+            if (typedString === "sebastian") {
+                // Play sounds
+                eggSound.currentTime = 0;
+                eggSound.play().catch(() => {});
+                visualSound.currentTime = 0;
+                visualSound.play().catch(() => {});
+
+                // Wait 0.1 seconds, then make image visible instantly
+                setTimeout(() => {
+                    eggImg.style.transition = "none";
+                    eggImg.style.opacity = "1";
+                }, 100);
+
+                // Wait 4 seconds (total time from trigger), then fade out over 3 seconds
+                setTimeout(() => {
+                    eggImg.style.transition = "opacity 2s ease-out";
+                    eggImg.style.opacity = "0";
+                }, 4000);
+
+                typedString = ""; 
+            }
         });
     </script>
-
 </body>
-</html>
