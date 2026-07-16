@@ -1099,10 +1099,140 @@
     opacity: 1;
     transition: none; /* No transition for the appearance */
 }
+.theme-switcher-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+.theme-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--accent-color);
+    padding: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.theme-helper {
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 0.9rem;
+    background: var(--accent-warm-yellow);
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+body.dark-mode {
+    --bg-color: #2d2a2a;
+    --card-bg: #3d3a3a;
+    --text-color: #fcf6f0;
+    --text-muted: #c0b9b5;
+}
+/* Apply these specifically when dark mode is active */
+.dark-mode .wave-dots {
+    background-image: radial-gradient(circle, #ffffff 3px, transparent 3px);
+}
+/* Sections (About Me, Favorite Games, etc.) */
+.dark-mode .section, 
+.dark-mode .container {
+    background-color: #1a1a1a; /* Dark background */
+    color: #ffffff;
+}
+
+/* Envelope (Contact Me) and ^ Top Button Backgrounds */
+.dark-mode .floating-envelope-btn, 
+.dark-mode .back-to-top {
+    background-color: #262626; /* Dark background */
+    border: 1.5px dashed #ffffff;
+    color: #ffffff;
+}
+
+/* Interactive Buttons (e.g., Moon Animator) */
+.dark-mode .item-tag, 
+.dark-mode .icon-tag {
+    background-color: #262626; /* Dark background */
+    border: 1px solid #404040;
+    color: #ffffff;
+}
+
+/* Pastel elements to Darker Pastels */
+.dark-mode .pastel-element {
+    background-color: #3b3030; /* Example of a darker pastel/muted tone */
+}
+
+/* "GoofyDingus" text (Bright Color) */
+.dark-mode .logo-text, 
+.dark-mode .brand-name {
+    color: #00ffcc; /* Bright cyan/accent color */
+}
+
+/* Scroll Wheel (White) */
+.dark-mode .scroll-wheel {
+    background-color: #ffffff;
+}
+
+/* Play/Pause < > buttons (Dark) */
+.dark-mode .music-btn {
+    color: #ffffff; /* Bright white text */
+    background-color: #121212; /* Keep button background dark */
+}
+/* Online status and Social Icons (Dark) */
+.dark-mode .status-indicator, 
+.dark-mode .social-icon {
+    background-color: #121212;
+    color: #555555;
+}
+/* Darken the container background */
+.dark-mode #discord-activity-badge {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333333 !important;
+}
+
+/* Change the text color inside the container */
+.dark-mode #discord-activity-text {
+    color: #ffffff !important;
+}
+.dark-mode .activity-badge,
+.dark-mode .status-badge {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333333 !important;
+}
+
+/* "Drop a Message" text (Bright) */
+.dark-mode .contact-title, 
+.dark-mode .contact-me-header {
+    color: #ffffff;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+    background-color: #ffffff;
+}
+/* Ensure H1 text is white in dark mode */
+.dark-mode h1 {
+    color: #ffffff !important;
+}
+/* Update headings and modal titles to white in dark mode */
+.dark-mode h1, 
+.dark-mode .modal-title, 
+.dark-mode .section-title {
+    color: #ffffff !important;
+}
+
+/* Update the envelope text to yellow in dark mode */
+.dark-mode .floating-envelope-text {
+    color: #ffff00 !important;
+}floa
     </style>
 </head>
 <body>
+<div class="theme-switcher-container">
+    <button id="theme-toggle" class="theme-btn">☀️</button>
+    <span id="theme-helper" class="theme-helper">← Dark Mode</span>
+</div>
 <div class="wave-background">
         <div class="wave-dots"></div>
     </div>
@@ -1854,6 +1984,33 @@ function triggerYippie() {
         setTimeout(() => video.remove(), 3000);
     }, 5000);
 }
+</script>
+<script>
+const themeToggle = document.getElementById("theme-toggle");
+const themeHelper = document.getElementById("theme-helper");
+
+// Check for saved preference
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "🌙";
+    themeHelper.style.display = "none"; // Hide if already switched
+}
+
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    
+    // Switch emoji
+    if (document.body.classList.contains("dark-mode")) {
+        themeToggle.textContent = "🌙";
+        localStorage.setItem("theme", "dark");
+    } else {
+        themeToggle.textContent = "☀️";
+        localStorage.setItem("theme", "light");
+    }
+
+    // Hide helper text once interacted
+    themeHelper.style.display = "none";
+});
 </script>
 
 </body>
