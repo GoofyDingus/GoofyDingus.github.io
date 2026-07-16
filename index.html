@@ -1648,30 +1648,33 @@ function resetBoard() {
         });
     </script>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+  // ... imports and config remain exactly as you have them ...
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDkLi-Vw77eVp718st8ycnAoB8NR7pPKKs",
-    authDomain: "tic-tac-toe-8b338.firebaseapp.com",
-    databaseURL: "https://tic-tac-toe-8b338-default-rtdb.firebaseio.com",
-    projectId: "tic-tac-toe-8b338",
-    storageBucket: "tic-tac-toe-8b338.firebasestorage.app",
-    messagingSenderId: "494581928887",
-    appId: "1:494581928887:web:f9104ec30befbf99478e32"
-  };
-
-  // Initialize Firebase services once
+  // Initialize Firebase and references
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const auth = getAuth(app);
   const boardRef = ref(db, 'game/board');
 
-  // Sign in anonymously immediately
-  signInAnonymously(auth).catch((error) => console.error("Auth error:", error));
+  // Game state
+  let board = Array(9).fill(null);
+  let currentPlayer = 'X';
 
-  // Listen for board updates
+  // 1. Attach to window so HTML can see it
+  window.makeMove = function(index) {
+      if (!board[index]) {
+          board[index] = currentPlayer;
+          set(boardRef, board);
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      }
+  };
+
+  // 2. Add a global reset function if you want it to work
+  window.resetBoard = function() {
+      set(boardRef, Array(9).fill(null));
+  };
+
+  // Listen for updates
   onValue(boardRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -1683,17 +1686,6 @@ function resetBoard() {
       }
   });
 
-  // Game state
-  let board = Array(9).fill(null);
-  let currentPlayer = 'X';
-
-  // Make a move and sync to Firebase
-  window.makeMove = function(index) {
-      if (!board[index]) {
-          board[index] = currentPlayer;
-          set(boardRef, board);
-          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-  };
+  signInAnonymously(auth);
 </script>
 </body>
