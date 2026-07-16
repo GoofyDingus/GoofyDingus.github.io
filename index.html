@@ -815,13 +815,14 @@
             border: 1px solid rgba(213, 147, 98, 0.2);
         }
 
-        .social-links {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
+.social-links {
+    display: flex;             /* Changed from grid */
+    justify-content: center;    /* Centers the buttons */
+    flex-wrap: wrap;           /* Allows them to wrap if screen is small */
+    gap: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
 
         .btn {
             display: flex;
@@ -927,25 +928,184 @@
                 box-shadow: 0 -4px 15px rgba(218, 192, 183, 0.2);
             }
         }
-/* Tic-Tac-Toe Menu Styling */
-.ttt-menu-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(77, 85, 93, 0.4); z-index: 9999; align-items: center; justify-content: center; }
-.ttt-card { background: #f0f7fc; border: 3px solid #b3c5ff; padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 10px 25px rgba(179, 197, 255, 0.3); }
-.board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin: 20px 0; }
-.cell { width: 80px; height: 80px; background: #eaf3ff; border: 2px solid #b3c5ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; cursor: pointer; color: #4b6cb7; }
-.cell:hover { background: #d1e3ff; }
-.button-dock { position: fixed; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 10px; z-index: 1000; }
-.winner-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(240, 247, 252, 0.9); z-index: 10000;
-    align-items: center; justify-content: center;
-    font-size: 4rem; color: #4b6cb7; font-weight: bold;
-    animation: fadeOut 1s forwards; animation-delay: 3s;
+/* Diagonal Wave Pattern Background */
+.wave-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    background-color: var(--bg-color);
 }
-@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+.wave-dots {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: calc(100% + 100px);
+    height: calc(100% + 100px);
+    /* Increased dot size to 3px, decreased background-size to 30px for more density */
+    background-image: radial-gradient(circle, #e6d5c3 3px, transparent 3px);
+    background-size: 50px 50px;
+    background-position: 0 0;
+    animation: wave-shift 10s linear infinite;
+}
+
+@keyframes wave-shift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+.social-links-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.icon-btn {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    position: relative; /* Necessary for the tooltip to anchor correctly */
+}
+
+.icon-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.icon-btn:hover {
+    transform: translateY(-3px);
+}
+
+/* Inherit the existing tooltip behavior from your .item-tag class */
+.icon-btn::after, .icon-btn::before {
+    content: attr(data-tooltip);
+    /* Apply the same positioning/styling logic as your .item-tag::after/before */
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    /* ... Copy the rest of the styling from .item-tag::after and ::before ... */
+}
+.icon-btn-wrapper {
+    display: inline-flex; /* Changed from flex to inline-flex */
+    align-items: center;
+    justify-content: center;
+    background-color: #fffdfa;
+    border: 1.5px dashed #e6d5c3;
+    padding: 10px; /* Adjust padding to make the border hug the icon */
+    border-radius: 12px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    margin: 5px; /* Adds a little space between the buttons */
+    text-decoration: none; /* Removes underline from the link */
+}
+
+.icon-btn-wrapper:hover {
+    background-color: #fffaf5;
+    transform: translateY(-2px);
+}
+/* Ensure the tags only take up the space they need */
+.icon-tag {
+    display: inline-flex;  /* This is the secret to wrapping */
+    width: auto;           /* Forces it to ignore container width */
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;     /* Adjust horizontal padding to your liking */
+    border: 1.5px dashed #e6d5c3;
+    border-radius: 12px;
+    background-color: #fffdfa;
+    /* ...keep your other existing hover/tooltip styles here... */
+}
+
+.icon-tag:hover {
+    background-color: #fffaf5;
+    transform: translateY(-2px);
+}
+
+/* Tooltip Bubble Structure for Icons */
+.icon-tag::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: #5d4d4a;
+    color: #fff9f5;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    
+    /* Change these lines */
+    width: max-content;    /* Tooltip wraps exactly to text width */
+    max-width: 250px;      /* Optional: keeps it from being too wide */
+    white-space: nowrap;   /* Keeps text on one line */
+    
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 4px 12px rgba(93, 77, 74, 0.25);
+    z-index: 100;
+    transition: opacity 0.25s ease, transform 0.2s ease, visibility 0.25s;
+}
+
+/* Tooltip Arrow for Icons */
+.icon-tag::before {
+    content: "";
+    position: absolute;
+    bottom: 112%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #5d4d4a transparent transparent transparent;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 100;
+    transition: opacity 0.25s ease, transform 0.2s ease, visibility 0.25s;
+}
+
+/* Trigger tooltip visibility on hover */
+.icon-tag:hover::after,
+.icon-tag:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+.easter-egg-image {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 110vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    opacity: 0;
+    /* Only transition opacity when it is being removed (fading out) */
+    transition: opacity 0.5s ease-in-out; 
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Instant appearance */
+.easter-egg-image.show {
+    opacity: 1;
+    transition: none; /* No transition for the appearance */
+}
+
     </style>
 </head>
 <body>
-<div id="winner-banner" class="winner-overlay"></div>
+<div class="wave-background">
+        <div class="wave-dots"></div>
+    </div>
     <!-- Background Music Element -->
     <div class="music-player">
         <!-- Spotify Drawer Container -->
@@ -975,25 +1135,26 @@
             <button class="music-btn" id="play-btn" onclick="toggleMusic()">Play</button>
             <button class="music-btn" id="next-btn" onclick="nextSong()">&gt;</button>
         </div>
-        <div class="slider-container">
-            <div class="slider-row">
-                <input type="range" id="progress-slider" value="0" min="0" max="100">
-            </div>
-            <div class="time-display">
-                <span id="time-current">0:00</span>
-                <span id="time-duration">0:00</span>
-            </div>
-        </div>
-        <div class="volume-container">
-            <span class="volume-label">🔊</span>
-            <input type="range" id="volume-slider" value="80" min="0" max="100">
-        </div>
+<div class="slider-container">
+    <div class="slider-row">
+        <!-- This exact ID must exist for your script to work -->
+        <input type="range" id="progress-slider" value="0" min="0" max="100">
+    </div>
+    <div class="time-display">
+        <span id="time-current">0:00</span>
+        <span id="time-duration">0:00</span>
+    </div>
+</div>
+<div class="volume-container">
+    <span class="volume-label">🔊</span>
+    <input type="range" id="volume-slider" value="40" min="0" max="100">
+</div>
     </div>
     <audio id="bg-music"></audio>
 
     <div class="container">
         <div>
-            <h1>Goofy Dingus</h1>
+            <h1>GoofyDingus</h1>
             <div class="subtitle">- Welcome to my space! -</div>
             <!-- Discord Badges Container -->
             <div class="discord-status-container">
@@ -1010,19 +1171,24 @@
         </div>
 
         <!-- External Links -->
-        <div class="social-links font-style-normal">
-            <a href="https://discord.gg/Bd88yk8bMW" target="_blank" class="btn btn-discord">
-                &gt; Join My Discord &lt;
-            </a>
-            <a href="https://www.youtube.com/@Goofy_Dingus" target="_blank" class="btn btn-youtube">
-                &gt; My YouTube Channel &lt;
-            </a>
-        </div>
+<div class="social-links">
+    <!-- Removed 'item-tag', added 'icon-tag' -->
+
+    <a href="https://www.youtube.com/@Goofy_Dingus" target="_blank" class="icon-tag" data-tooltip="My YouTube Channel!">
+        <img src="youtubeicon.png" style="width: 24px; height: 24px;">
+    </a>
+    <a href="https://discord.gg/Bd88yk8bMW" target="_blank" class="icon-tag" data-tooltip="My Discord Server!">
+        <img src="discordicon.png" style="width: 24px; height: 24px;">
+    </a>
+    <a href="https://www.roblox.com/users/887874770/profile" target="_blank" class="icon-tag" data-tooltip="My Roblox Profile!">
+        <img src="robloxicon.png" style="width: 24px; height: 24px;">
+    </a>
+</div>
 
         <!-- About Me Section -->
         <div class="section">
             <div class="section-title">✨ About Me</div>
-            <p>Hey there! I'm male, living in the USA. I'm gay, a proud furry, and a beginner working on my skills with <span class="item-tag" style="padding: 2px 6px; font-size: 0.9rem;" data-tooltip="A super peak Roblox animation plugin I use! ($30 USD.)">Moon Animator</span>. :3</p>
+            <p>Hello! :O I'm male, living in the U.S.A. I'm gay, a furry, and a beginner working on my skills with <span class="item-tag" style="padding: 2px 6px; font-size: 0.9rem;" data-tooltip="A super peak Roblox animation plugin I use! ($30 USD.)">Moon Animator</span>. :3</p>
         </div>
 
         <!-- Favorite Games Section -->
@@ -1106,30 +1272,11 @@
         </div>
     </div>
 
-    <div class="button-dock">
     <!-- Envelope Button -->
-    <button class="floating-envelope-btn" onclick="openContactModal()" style="position: static; box-shadow: none;">
+    <button class="floating-envelope-btn" onclick="openContactModal()">
         <span class="floating-envelope-emoji">✉️</span>
         <span class="floating-envelope-text">Contact Me!</span>
     </button>
-    
-    <!-- Dice Button -->
-    <button class="dice-btn" onclick="toggleTTT(true)" style="font-size: 1.5rem; background: var(--accent-warm-orange); border: 1.5px dashed #e6d5c3; padding: 8px 12px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(218, 192, 183, 0.4);">🎲</button>
-</div>
-
-<!-- Hidden Menu remains the same -->
-<div id="ttt-menu" class="ttt-menu-modal">
-    <div class="ttt-card">
-        <h2 style="color: #4b6cb7;">Tic-Tac-Toe</h2>
-        <div class="board">
-            <script>
-                for(let i=0; i<9; i++) document.write(`<div class="cell" onclick="makeMove(${i})" id="c${i}"></div>`);
-            </script>
-        </div>
-        <button class="music-btn" onclick="resetBoard()" style="background: #b3c5ff; color: #3b4b80;">Reset</button>
-        <button class="music-btn" onclick="toggleTTT(false)" style="background: #b3c5ff; color: #3b4b80;">Close</button>
-    </div>
-</div>
 
     <!-- Cozy Contact Form Modal -->
     <div class="contact-modal" id="contactModal" onclick="closeContactModal(event)">
@@ -1201,7 +1348,9 @@
         const activityText = document.getElementById("discord-activity-text");
 
         // Set initial volume
-        music.volume = volumeSlider.value / 100;
+if (volumeSlider) {
+    music.volume = volumeSlider.value / 100;
+}
 
         // Shuffle queue generator
         function initPlaylist() {
@@ -1256,11 +1405,13 @@
         });
 
         // User drags manual progress slider
+if (progressSlider) {
         progressSlider.addEventListener("input", () => {
             if (!music.duration) return;
             const seekTime = (progressSlider.value / 100) * music.duration;
             music.currentTime = seekTime;
         });
+}
 
         // User adjusts volume slider
         volumeSlider.addEventListener("input", () => {
@@ -1511,48 +1662,9 @@
         } else {
             statusTextLabel.textContent = "No User ID Configured";
         }
-function toggleTTT(show) {
-    document.getElementById('ttt-menu').style.display = show ? 'flex' : 'none';
-}
-
-let board = Array(9).fill(null);
-let currentPlayer = 'X';
-
-function makeMove(index) {
-    if (!board[index] && !checkWinner()) { // Prevent moves after win
-        board[index] = currentPlayer;
-        document.getElementById(`c${index}`).textContent = currentPlayer;
-        
-        if (checkWinner()) {
-            const banner = document.getElementById('winner-banner');
-            banner.textContent = currentPlayer + " WINS!";
-            banner.style.display = 'flex';
-            banner.style.opacity = '1';
-            // Reset visibility for animation
-            banner.style.animation = 'none';
-            void banner.offsetWidth; // Trigger reflow
-            banner.style.animation = 'fadeOut 1s forwards 3s';
-        } else {
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        }
-    }
-}
-
-function checkWinner() {
-    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    return wins.some(p => board[p[0]] && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]);
-}
-function resetBoard() {
-    board = Array(9).fill(null);
-    for(let i=0; i<9; i++) {
-        const cell = document.getElementById(`c${i}`);
-        if(cell) cell.textContent = '';
-    }
-    currentPlayer = 'X';
-}
     </script>
-<!-- ... rest of your body content ... -->
-<!-- Image: Removed 'transition' so it appears instantly -->
+
+    <!-- Image: Removed 'transition' so it appears instantly -->
     <img id="easter-egg-img" src="sebastian_image.png" style="
         position: fixed; 
         top: 0; 
@@ -1646,46 +1758,63 @@ function resetBoard() {
                 typedString = ""; 
             }
         });
-    </script>
-<script type="module">
-  // ... imports and config remain exactly as you have them ...
+// Add this alongside your existing "sebastian" code
+// 1. Declare the variable ONCE at the top
+let keySequence = ""; 
 
-  // Initialize Firebase and references
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
-  const boardRef = ref(db, 'game/board');
+document.addEventListener("keydown", (event) => {
+    // 2. Now this line will work because the variable exists in this scope
+    keySequence += event.key.toLowerCase();
 
-  // Game state
-  let board = Array(9).fill(null);
-  let currentPlayer = 'X';
+    // 3. Your check for "zardingus"
+    if (keySequence.endsWith("zardingus")) {
+        triggerZardingus();
+        keySequence = ""; // Reset after trigger
+    }
+    
+    // 4. Your check for "sebastian" (or whatever your other trigger is)
+    if (keySequence.endsWith("sebastian")) {
+        triggerSebastian();
+        keySequence = ""; 
+    }
+});
+function triggerZardingus() {
+    // 1. Play audio
+    const audio = new Audio('egg2.mp3');
+    audio.play();
 
-  // 1. Attach to window so HTML can see it
-  window.makeMove = function(index) {
-      if (!board[index]) {
-          board[index] = currentPlayer;
-          set(boardRef, board);
-          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-  };
+    const effect = new Audio('effect3.mp3');
+    setTimeout(() => { 
+        effect.play(); 
+    }, 100);
 
-  // 2. Add a global reset function if you want it to work
-  window.resetBoard = function() {
-      set(boardRef, Array(9).fill(null));
-  };
+    // 2. Setup image
+    const img = document.createElement('img');
+    img.src = 'zardingus_image.png';
+    img.className = 'easter-egg-image';
+    document.body.appendChild(img);
 
-  // Listen for updates
-  onValue(boardRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-          board = data;
-          data.forEach((val, i) => {
-              const cell = document.getElementById(`c${i}`);
-              if(cell) cell.textContent = val;
-          });
-      }
-  });
+    // Instant show
+    img.style.transition = 'none';
+    img.classList.add('show');
 
-  signInAnonymously(auth);
+    // 3. Audio cutoff at 6 seconds
+    setTimeout(() => {
+        audio.pause(); 
+        effect.pause(); 
+    }, 6200); // Pauses audio at exactly 6 seconds
+
+    // 4. Fade-out logic
+    // We trigger the fade-out after the audio cutoff
+    setTimeout(() => {
+        img.style.transition = 'opacity 3s ease-in-out'; // 3-second fade
+        img.classList.remove('show');
+        
+        // Remove after the 3-second fade completes
+        setTimeout(() => { img.remove(); }, 3000);
+    }, 4000); 
+}
 </script>
+
 </body>
+</html>
