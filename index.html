@@ -1530,8 +1530,8 @@
 
         // Event Listeners
         document.addEventListener("mousemove", (e) => {
-            if (Math.random() > 0.85) {
-                const char = Math.random() > 0.5 ? "»" : "«";
+            if (Math.random() > 0.01) {
+                const char = Math.random() > 0.01 ? "»" : "«";
                 createParticle(e.clientX, e.clientY, char, "#e0858d", true, "12px");
                 moveSound.currentTime = 0;
                 moveSound.play().catch(() => {});
