@@ -1683,7 +1683,7 @@ if (progressSlider) {
         const eggSound = new Audio('egg1.mp3');
         const visualSound = new Audio('effect3.mp3'); 
         
-        moveSound.volume = 0.3;
+        moveSound.volume = 0;
         clickSound.volume = 0.5;
 
         const eggImg = document.getElementById('easter-egg-img');
@@ -1813,6 +1813,46 @@ function triggerZardingus() {
         // Remove after the 3-second fade completes
         setTimeout(() => { img.remove(); }, 3000);
     }, 4000); 
+}
+</script>
+<script>
+
+document.addEventListener("keydown", (event) => {
+    
+    // Diagnostic: Log every key you type to the console (F12)
+    console.log("Current sequence:", keySequence);
+
+    if (keySequence.endsWith("yippie")) {
+        console.log("Trigger detected!"); // If this doesn't show, the listener is broken
+        triggerYippie();
+        keySequence = ""; 
+    }
+});
+
+function triggerYippie() {
+    console.log("Attempting to play video...");
+    
+    const video = document.createElement('video');
+    video.src = 'yippie.mp4';
+    video.className = 'easter-egg-image';
+    video.autoplay = true;
+    video.muted = false; // MUST be muted to bypass browser auto-play blocks
+    video.playsInline = true;
+    
+    // Add to body
+    document.body.appendChild(video);
+    
+    // Error handling
+    video.onerror = (e) => console.error("Video error:", e);
+    video.onplay = () => console.log("Video is playing");
+    
+    video.style.opacity = '1';
+    
+    setTimeout(() => {
+        video.style.transition = 'opacity 3s ease-in-out';
+        video.style.opacity = '0';
+        setTimeout(() => video.remove(), 3000);
+    }, 5000);
 }
 </script>
 
