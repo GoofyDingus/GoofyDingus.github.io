@@ -2232,28 +2232,23 @@ announceInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         const message = announceInput.value.trim();
 
-        // Only proceed if the message is not empty
         if (message !== "") {
+            // If there is text, update the billboard
             announcementSound.play();
             set(ref(db, 'announcements/current'), message);
-            announceInput.value = "";
-            announceInput.classList.remove("expanded");
+        } else {
+            // If the input is empty, clear the announcement from the database
+            set(ref(db, 'announcements/current'), null);
         }
+
+        // Always clear the input field and close the panel
+        announceInput.value = "";
+        announceInput.classList.remove("expanded");
     }
 });
 
-    // 4. Global Listener
-    onValue(ref(db, 'announcements/current'), (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.trim() !== "") {
-            billboardDisplay.style.display = "block";
-            billboardContent.textContent = data;
-        } else {
-            billboardDisplay.style.display = "none";
-        }
-    });
-
-let hasLoaded = false; // Prevents the sound from playing on initial page load
+// 4. Global Listener (Combined)
+let hasLoaded = false; 
 
 onValue(ref(db, 'announcements/current'), (snapshot) => {
     const data = snapshot.val();
@@ -2273,6 +2268,7 @@ onValue(ref(db, 'announcements/current'), (snapshot) => {
         billboardDisplay.style.display = "none";
     }
 });
+
 // Visit Counter Logic
 const visitsRef = ref(db, 'stats/visits');
 
