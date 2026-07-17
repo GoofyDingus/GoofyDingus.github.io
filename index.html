@@ -2276,15 +2276,16 @@ onValue(ref(db, 'announcements/current'), (snapshot) => {
 // Visit Counter Logic
 const visitsRef = ref(db, 'stats/visits');
 
-// 1. Increment only on new session (not reload)
-if (!sessionStorage.getItem('visited')) {
+// Use localStorage so it persists across all tabs
+if (!localStorage.getItem('visited')) {
     runTransaction(visitsRef, (current) => {
         return (current || 0) + 1;
     });
-    sessionStorage.setItem('visited', 'true');
+    // Mark as visited in localStorage
+    localStorage.setItem('visited', 'true');
 }
 
-// 2. Display the count
+// Display the count
 onValue(visitsRef, (snapshot) => {
     const count = snapshot.val() || 0;
     const visitElement = document.getElementById('visit-counter');
