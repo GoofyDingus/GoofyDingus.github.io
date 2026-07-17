@@ -1225,13 +1225,113 @@ body.dark-mode {
 /* Update the envelope text to yellow in dark mode */
 .dark-mode .floating-envelope-text {
     color: #ffff00 !important;
-}floa
+}
+/* Ensure the wrapper doesn't disrupt existing flex items */
+#announcer-wrapper {
+    display: none; /* Keeps it hidden by default */
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0; /* Prevents the new panel from shrinking your other nav items */
+}
+
+/* Ensure inner panels don't inherit unintended stretch/spacing */
+#auth-panel, #announce-panel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.auth-input {
+    padding: 6px 10px;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.85rem;
+    width: 120px;
+    outline: none;
+}
+/* Announcement Control Styles */
+.announcer-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#announce-input {
+    width: 0;
+    opacity: 0;
+    padding: 0;
+    border: 1px solid var(--accent-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    pointer-events: none;
+    height: 38px;
+    font-size: 0.9rem;
+}
+
+#announce-input.expanded {
+    width: 180px;
+    opacity: 1;
+    padding: 0 10px;
+    pointer-events: auto;
+}
+
+/* Billboard Display Styles */
+#billboard-display {
+    background-color: #ffffba !important;
+    color: #000000 !important;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    display: none; 
+    border: 2px solid #e6d5c3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.billboard-text {
+    display: inline-block;
+}
+
+/* Circling Marquee Animation */
+.marquee-anim {
+    animation: marquee-scroll 8s linear infinite;
+}
+
+@keyframes marquee-scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
     </style>
 </head>
 <body>
 <div class="theme-switcher-container">
     <button id="theme-toggle" class="theme-btn">☀️</button>
     <span id="theme-helper" class="theme-helper">← Dark Mode</span>
+    
+    <!-- Added id="announcer-wrapper" and style="display: none;" -->
+<div id="announcer-wrapper" class="announcer-wrapper" style="display: none;">
+    <!-- Login Panel -->
+    <div id="auth-panel" style="display: flex; gap: 5px;">
+        <input type="email" id="auth-email" placeholder="Admin Email" class="auth-input">
+        <input type="password" id="auth-pass" placeholder="Password" class="auth-input">
+        <button id="auth-login-btn" class="theme-btn">Login</button>
+    </div>
+    
+    <!-- Announce Panel (Hidden until logged in) -->
+    <div id="announce-panel" style="display: none; align-items: center; gap: 10px;">
+        <button id="announce-toggle" class="theme-btn">📢</button>
+        <input type="text" id="announce-input" placeholder="Type and press Enter..." autocomplete="off">
+        <button id="auth-logout-btn" class="theme-btn" style="font-size: 0.8rem; padding: 5px;">Logout</button>
+    </div>
+</div>
 </div>
 <div class="wave-background">
         <div class="wave-dots"></div>
@@ -1281,10 +1381,14 @@ body.dark-mode {
 </div>
     </div>
     <audio id="bg-music"></audio>
-
-    <div class="container">
-        <div>
-            <h1>GoofyDingus</h1>
+<div class="container">
+    <div id="billboard-display">
+        <div class="billboard-text" id="billboard-content"></div>
+    </div>
+    
+    <div>
+        <h1>GoofyDingus</h1>
+        <!-- Rest of your code -->
             <div class="subtitle">- Welcome to my space! -</div>
             <!-- Discord Badges Container -->
             <div class="discord-status-container">
@@ -2012,6 +2116,88 @@ themeToggle.addEventListener("click", () => {
     themeHelper.style.display = "none";
 });
 </script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+    // --- PASTE YOUR FIREBASE CONFIG HERE ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkLi-Vw77eVp718st8ycnAoB8NR7pPKKs",
+    authDomain: "tic-tac-toe-8b338.firebaseapp.com",
+    databaseURL: "https://tic-tac-toe-8b338-default-rtdb.firebaseio.com",
+    projectId: "tic-tac-toe-8b338",
+    storageBucket: "tic-tac-toe-8b338.firebasestorage.app",
+    messagingSenderId: "494581928887",
+    appId: "1:494581928887:web:f9104ec30befbf99478e32",
+    measurementId: "G-MCJZSL2PF3"
+  };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Elements
+    const announcerWrapper = document.getElementById("announcer-wrapper");
+    const authPanel = document.getElementById("auth-panel");
+    const announcePanel = document.getElementById("announce-panel");
+    const authEmail = document.getElementById("auth-email");
+    const authPass = document.getElementById("auth-pass");
+    const authLoginBtn = document.getElementById("auth-login-btn");
+    const authLogoutBtn = document.getElementById("auth-logout-btn");
+    const announceToggle = document.getElementById("announce-toggle");
+    const announceInput = document.getElementById("announce-input");
+    const billboardDisplay = document.getElementById("billboard-display");
+    const billboardContent = document.getElementById("billboard-content");
+
+    // 1. Shortcut Logic
+    document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "y") {
+            announcerWrapper.style.display = announcerWrapper.style.display === "none" ? "flex" : "none";
+        }
+    });
+
+    // 2. Auth Logic
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            authPanel.style.display = "none";
+            announcePanel.style.display = "flex";
+        } else {
+            authPanel.style.display = "flex";
+            announcePanel.style.display = "none";
+        }
+    });
+
+    authLoginBtn.addEventListener("click", () => {
+        signInWithEmailAndPassword(auth, authEmail.value, authPass.value).catch(e => alert(e.message));
+    });
+
+    authLogoutBtn.addEventListener("click", () => signOut(auth));
+
+    // 3. Announce Logic
+    announceToggle.addEventListener("click", () => {
+        announceInput.classList.toggle("expanded");
+        if (announceInput.classList.contains("expanded")) announceInput.focus();
+    });
+
+    announceInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            set(ref(db, 'announcements/current'), announceInput.value.trim());
+            announceInput.value = "";
+            announceInput.classList.remove("expanded");
+        }
+    });
+
+    // 4. Global Listener
+    onValue(ref(db, 'announcements/current'), (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.trim() !== "") {
+            billboardDisplay.style.display = "block";
+            billboardContent.textContent = data;
+        } else {
+            billboardDisplay.style.display = "none";
+        }
+    });
+</script>
 </body>
 </html>
