@@ -1430,7 +1430,7 @@ body.dark-mode {
     <div id="billboard-display">
         <div class="billboard-text" id="billboard-content"></div>
     </div>
-    
+    <div id="my-local-time" style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted); margin-bottom: -5px;">🕒 My Time: Loading...</div>
     <div>
         <h1>GoofyDingus</h1>
         <!-- Rest of your code -->
@@ -1598,7 +1598,12 @@ body.dark-mode {
         const playlist = [
             { file: "song1.mp3", title: "Imposter Syndrome - Sydney Gish" },
             { file: "song2.mp3", title: "meow synth speed garage was a mistake (ft. cat) - AZALI" },
-            { file: "song3.mp3", title: "Not asking 4 much - Frizk" }
+            { file: "song3.mp3", title: "Not asking 4 much - Frizk" },
+	    { file: "song4.mp3", title: "Oh Yeah? - Frizk"},
+	    { file: "song5.mp3", title: "BATTLE UNDER A BROKEN SKY - AZALI"},
+	    { file: "song6.mp3", title: "I've lost myself - Frizk"},
+	    { file: "song7.mp3", title: "Sin Triangle - Sydney Gish"},
+	    { file: "song8.mp3", title: "falling // pink roses - AZALI"}
         ];
         
         let shuffledQueue = [];
@@ -2292,8 +2297,37 @@ onValue(visitsRef, (snapshot) => {
 </script>
 <script>
 document.getElementById('overlay').addEventListener('click', function() {
+    // Hide the overlay
     this.style.display = 'none';
+    
+    // Automatically start the music player if it isn't playing already
+    const musicElement = document.getElementById("bg-music");
+    if (musicElement && musicElement.paused) {
+        toggleMusic();
+    }
 });
+</script>
+<script>
+    function updateMyTime() {
+        const timeElement = document.getElementById("my-local-time");
+        if (!timeElement) return;
+
+        const now = new Date();
+        // This forces the clock to always show Eastern Time, no matter where the visitor lives
+        const timeString = now.toLocaleTimeString("en-US", {
+            timeZone: "America/New_York",
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
+
+        timeElement.textContent = "🕒 My Time: " + timeString + " (EST)";
+    }
+
+    // Run it immediately, then update every 1 second (1000 milliseconds)
+    updateMyTime();
+    setInterval(updateMyTime, 1000);
 </script>
 </body>
 </html>
